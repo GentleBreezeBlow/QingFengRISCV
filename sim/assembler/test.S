@@ -1,0 +1,22 @@
+_start:
+	lui	a5,0x10013
+	addi	a5,a5,8
+	li	a4,1
+	sw	a4,0(a5)
+	lui	a5,0x10013
+	li	a4,0x41
+	sw	a4,0(a5)
+	li	a4,101
+	sw	a4,0(a5)
+	li	a4,108
+	sw	a4,0(a5)
+	sw	a4,0(a5)
+	li	a4,111
+	sw	a4,0(a5)
+	li	a4,33
+	sw	a4,0(a5)
+	li	a4,10
+	sw	a4,0(a5)
+	lui	a5,0x10
+	addi	a5,a5,0x4a
+	jr	a5

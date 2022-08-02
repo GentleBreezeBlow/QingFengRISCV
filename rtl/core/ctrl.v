@@ -8,7 +8,7 @@
 // Reference    : 
 //-----------------------------------------------------------------------------
 
-`include "../include/core_defines.v"
+`include "core_defines.v"
 module ctrl (
     input  [6:0]        opcode,                 // Operation code
 

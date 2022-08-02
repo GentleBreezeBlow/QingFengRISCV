@@ -8,7 +8,7 @@
 // Reference    : 
 //-----------------------------------------------------------------------------
 
-`include "../include/core_defines.v"
+`include "core_defines.v"
 module alu_ctrl (
     input  [1:0]        ctrl_ALUOp,
     input  [2:0]        funct3,

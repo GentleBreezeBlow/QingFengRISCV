@@ -196,14 +196,14 @@ module QingFengRISCV (
     //-------------------------------------
 	/* instr_execute AUTO_TEMPLATE (.\(.*\) (ex_\1[]),); */
     instr_execute 	u_instr_execute (
+					.clk(clk),
+					.rst_n(rst_n),
 					/*AUTOINST*/
 					// Outputs
 					.pc_jump		(ex_pc_jump),	 // Templated
 					.pc_jump_addr		(ex_pc_jump_addr[31:0]), // Templated
 					.alu_result		(ex_alu_result[31:0]), // Templated
 					// Inputs
-					.clk			(ex_clk),	 // Templated
-					.rst_n			(ex_rst_n),	 // Templated
 					.ctrl_ALUOp		(ex_ctrl_ALUOp[1:0]), // Templated
 					.ctrl_branch		(ex_ctrl_branch), // Templated
 					.ctrl_alusrc		(ex_ctrl_alusrc), // Templated

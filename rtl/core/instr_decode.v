@@ -8,7 +8,7 @@
 // Reference    : 
 //-----------------------------------------------------------------------------
 
-`include "../include/core_define.v"
+`include "core_defines.v"
 module instr_decode (
     input               clk,
     input               rst_n,

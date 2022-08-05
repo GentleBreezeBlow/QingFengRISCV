@@ -24,6 +24,8 @@ module id_ex (
     input               ctrl_mem_write_i,
     input               ctrl_alusrc_i,
     input               ctrl_regs_write_i,
+    input               ctrl_u_type_i,
+    input               ctrl_u_type_auipc_i,
     output reg [1:0]    ctrl_ALUOp_o,
     output reg          ctrl_branch_o,
     output reg          ctrl_mem_to_regs_o,
@@ -31,6 +33,8 @@ module id_ex (
     output reg          ctrl_mem_write_o,
     output reg          ctrl_alusrc_o,
     output reg          ctrl_regs_write_o,
+    output reg          ctrl_u_type_o,
+    output reg          ctrl_u_type_auipc_o,
 
     // immediate
     input  [31:0]       imme_i,
@@ -43,10 +47,10 @@ module id_ex (
     output reg          funct7_5_o,
 
     // regs
-    input  [31:0]       regs_rdata1_i,
-    input  [31:0]       regs_rdata2_i,
-    output reg [31:0]   regs_rdata1_o,
-    output reg [31:0]   regs_rdata2_o,
+    input  [31:0]       rdata1_i,
+    input  [31:0]       rdata2_i,
+    output reg [31:0]   rdata1_o,
+    output reg [31:0]   rdata2_o,
 
     // rd
     input  [4:0]        regs_rd_i,
@@ -72,15 +76,19 @@ module id_ex (
             ctrl_mem_write_o <= 'b0;
             ctrl_alusrc_o <= 'b0;
             ctrl_regs_write_o <= 'b0;
+            ctrl_u_type_o <= 'b0;
+            ctrl_u_type_auipc_o <= 'b0;
         end
         else begin
-            ctrl_ALUOp_o        <= ctrl_ALUOp_i      ;
-            ctrl_branch_o       <= ctrl_branch_i     ;
-            ctrl_mem_to_regs_o  <= ctrl_mem_to_regs_i;
-            ctrl_mem_read_o     <= ctrl_mem_read_i   ;
-            ctrl_mem_write_o    <= ctrl_mem_write_i  ;
-            ctrl_alusrc_o       <= ctrl_alusrc_i     ;
-            ctrl_regs_write_o   <= ctrl_regs_write_i ;
+            ctrl_ALUOp_o        <= ctrl_ALUOp_i         ;
+            ctrl_branch_o       <= ctrl_branch_i        ;
+            ctrl_mem_to_regs_o  <= ctrl_mem_to_regs_i   ;
+            ctrl_mem_read_o     <= ctrl_mem_read_i      ;
+            ctrl_mem_write_o    <= ctrl_mem_write_i     ;
+            ctrl_alusrc_o       <= ctrl_alusrc_i        ;
+            ctrl_regs_write_o   <= ctrl_regs_write_i    ;
+            ctrl_u_type_o       <= ctrl_u_type_i        ;
+            ctrl_u_type_auipc_o <= ctrl_u_type_auipc_i  ;
         end
     end
 
@@ -109,12 +117,12 @@ module id_ex (
     // regs
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            regs_rdata1_o <= 'b0;
-            regs_rdata2_o <= 'b0;
+            rdata1_o <= 'b0;
+            rdata2_o <= 'b0;
         end
         else begin
-            regs_rdata1_o <= regs_rdata1_i;
-            regs_rdata2_o <= regs_rdata2_i;
+            rdata1_o <= rdata1_i;
+            rdata2_o <= rdata2_i;
         end
     end
 

@@ -13,8 +13,8 @@
 `define     I_type_imme     7'b0010011
 `define     I_type_load     7'b0000011
 `define     S_type          7'b0100011
-`define     B_type          7'b1100011 
-`define     U_type_lui      7'b0110111 
+`define     B_type          7'b1100011
+`define     U_type_lui      7'b0110111
 `define     U_type_auipc    7'b0010111
 `define     J_type_jal      7'b1101111
 `define     J_type_jalr     7'b1100111

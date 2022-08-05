@@ -24,6 +24,6 @@ sim:
 	-R +FSDB_DUMP|tee sim.log
 
 deb:
-	verdi -f filelist.f -autoalias  -nologo -workMode hardwareDebug -sv -top tb -ssf *.fsdb &
+	verdi -f filelist.f -autoalias  -nologo -workMode hardwareDebug -sv -top tb -ssf *.fsdb -sswr 1.rc &
 clean:
 	rm -rf ./csrc *.daidir *.log simv* *.key *.vpd ucli* ./DVEfiles *.fsdb *.conf *.rc ./verdiLog ${OUTPUT} *.vdb

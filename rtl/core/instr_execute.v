@@ -21,8 +21,8 @@ module instr_execute (
     input  [2:0]        funct3,
     input               funct7_5,
 
-    input  [31:0]       regs_rdata1,
-    input  [31:0]       regs_rdata2,
+    input  [31:0]       rdata1,
+    input  [31:0]       rdata2,
 
     input  [31:0]       pc,
 
@@ -44,8 +44,8 @@ module instr_execute (
     //-------------------------------------
     // ALU
     //-------------------------------------
-    assign alu_datain1 = regs_rdata1;
-    assign alu_datain2 = (ctrl_alusrc == 1'b1) ? imme : regs_rdata2;
+    assign alu_datain1 = rdata1;
+    assign alu_datain2 = (ctrl_alusrc == 1'b1) ? imme : rdata2;
 
     alu u_alu (/*AUTOINST*/
 	       // Outputs

@@ -63,7 +63,7 @@ module alu_ctrl (
 
     reg [3:0] alu_ctrl_r;
     always @(*) begin
-        case (ctrl_ALUOp)                       // 00: , 01: I_type, 10: R_type, 11: branch
+        case (ctrl_ALUOp)                       // 00: ADD, 01: I_type_imme, 10: R_type, 11: branch
             2'b00 : alu_ctrl_r = `ADD;
             2'b01 : alu_ctrl_r = I_Op;
             2'b10 : alu_ctrl_r = R_Op;

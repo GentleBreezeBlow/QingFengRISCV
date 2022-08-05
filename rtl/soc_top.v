@@ -13,7 +13,7 @@ module soc_top (
     input               rst_n
 );
 
-    parameter AW = 4;
+    parameter AW = 12;
     parameter DW = 32;
 
     /*AUTOWIRE*/
@@ -61,7 +61,10 @@ module soc_top (
     assign itcm_RADDR = itcm_addr[AW-1:0];
     assign itcm_datain = itcm_RDATA;
     /* itcm AUTO_TEMPLATE (.\(.*\) (itcm_\1[]),); */
-    itcm u_itcm (/*AUTOINST*/
+    itcm #(
+        .AW(AW),
+        .DW(DW)
+    )u_itcm (/*AUTOINST*/
 		 // Outputs
 		 .RDATA			(itcm_RDATA[DW-1:0]),	 // Templated
 		 // Inputs
@@ -91,7 +94,10 @@ module soc_top (
     assign dtcm_REN   = dtcm_mem_read;
 
     /* dtcm AUTO_TEMPLATE (.\(.*\) (dtcm_\1[]),); */
-    dtcm u_dtcm (/*AUTOINST*/
+    dtcm #(
+        .AW(AW),
+        .DW(DW)
+    )u_dtcm (/*AUTOINST*/
 		 // Outputs
 		 .RDATA			(dtcm_RDATA[DW-1:0]),	 // Templated
 		 // Inputs

@@ -18,7 +18,9 @@ module ctrl (
     output              ctrl_mem_read,
     output              ctrl_mem_write,
     output              ctrl_alusrc,
-    output              ctrl_regs_write
+    output              ctrl_regs_write,
+    output              ctrl_u_type,
+    output              ctrl_u_type_auipc
 );
     
     //-------------------------------------
@@ -45,15 +47,30 @@ module ctrl (
 
     // Select whether the second ALU input comes from the regfiles or immediate
     // 1: From immediate, 0: From regfiles
-    assign ctrl_alusrc      = ((opcode == `U_type_lui) ||
-                               (opcode == `U_type_auipc) ||
+    assign ctrl_alusrc      = ((opcode == `J_type_jalr) ||
                                (opcode == `I_type_imme) ||
                                (opcode == `I_type_load) ||
                                (opcode == `S_type)) ? 1'b1 : 1'b0;
 
-    // Select whether the regfiles input write data comes from ALU or DTCM
-    // 1: From DTCM, 0: From ALU
-    assign ctrl_regs_write  = ((opcode == `B_type) || 
-                               (opcode == `S_type)) ? 1'b0 : 1'b1;
+    // regfiles write enable
+    // 1: Enable, 0: disable
+    assign ctrl_regs_write  = ((opcode == `J_type_jal)   || 
+                               (opcode == `J_type_jalr)  ||
+                               (opcode == `U_type_auipc) ||
+                               (opcode == `U_type_lui)   ||
+                               (opcode == `I_type_load)  ||
+                               (opcode == `I_type_imme)  ||
+                               (opcode == `R_type)       ||
+                               (opcode == 7'b1110011)) ? 1'b1 : 1'b0;
+
+    // alu_ctrl sub module control signal
+    // 00: ADD, 01: I_type_imme, 10: R_type, 11: B_type/branch
+    assign ctrl_ALUOp[1]    = ((opcode == `R_type) || (opcode == `B_type)) ? 1'b1 : 1'b0;
+    assign ctrl_ALUOp[0]    = ((opcode == `I_type_imme) || (opcode == `B_type)) ? 1'b1 : 1'b0;
+
+    // Select whether instruction is U_type
+    assign ctrl_u_type      = ((opcode == `U_type_auipc) || (opcode == `U_type_lui)) ? 1'b1 : 1'b0;
+
+    assign ctrl_u_type_auipc = (opcode == `U_type_auipc) ? 1'b1 : 1'b0;
 
 endmodule //ctrl

@@ -12,6 +12,8 @@ module if_id (
     input               clk,
     input               rst_n,
 
+    input               flush,
+
     // instr
     input  [31:0]       instr_i,
     output reg [31:0]   instr_o,
@@ -25,6 +27,9 @@ module if_id (
         if(!rst_n) begin
             instr_o <= 'b0;
         end
+        else if (flush) begin
+            instr_o <= 'b0;
+        end
         else begin
             instr_o <= instr_i;
         end
@@ -33,6 +38,9 @@ module if_id (
     // pc
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
+            pc_o <= 'b0;
+        end
+        else if(flush) begin
             pc_o <= 'b0;
         end
         else begin

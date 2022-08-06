@@ -10,9 +10,6 @@
 
 `include "core_defines.v"
 module instr_decode (
-    input               clk,
-    input               rst_n,
-
     input  [31:0]       instr,
 
     output [4:0]        regs_rs1,

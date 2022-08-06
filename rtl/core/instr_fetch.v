@@ -26,7 +26,7 @@ module instr_fetch #(
             pc_r <= 'b0;                // pc reset
         end
         else if (pc_jump == 1'b1)        // pc jump
-            pc_r <= pc_r + pc_jump_addr;
+            pc_r <= pc_jump_addr;
         else
             pc_r <= pc_r + 32'd4;
     end

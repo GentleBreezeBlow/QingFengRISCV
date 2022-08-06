@@ -12,14 +12,14 @@ module QingFengRISCV (
     input               clk,
     input               rst_n,
 
-	output [31:0]		itcm_addr,
-	input  [31:0]		itcm_datain,
+    output [31:0]       itcm_addr,
+    input  [31:0]       itcm_datain,
 
-    output				dtcm_mem_write,
-	output [31:0]		dtcm_addr,
-	output [31:0]		dtcm_dataout,
-	input  [31:0]		dtcm_datain,
-	output 				dtcm_mem_read
+    output              dtcm_mem_write,
+    output [31:0]       dtcm_addr,
+    output [31:0]       dtcm_dataout,
+    input  [31:0]       dtcm_datain,
+    output              dtcm_mem_read
 );
 
     /*AUTOWIRE*/
@@ -27,7 +27,6 @@ module QingFengRISCV (
     wire [31:0]		ex_alu_result;		// From u_instr_execute of instr_execute.v
     wire [1:0]		ex_ctrl_ALUOp;		// From u_id_ex of id_ex.v
     wire		ex_ctrl_alusrc;		// From u_id_ex of id_ex.v
-    wire		ex_ctrl_branch;		// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_read;	// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_to_regs;	// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_write;	// From u_id_ex of id_ex.v
@@ -38,11 +37,10 @@ module QingFengRISCV (
     wire		ex_funct7_5;		// From u_id_ex of id_ex.v
     wire [31:0]		ex_imme;		// From u_id_ex of id_ex.v
     wire [31:0]		ex_pc;			// From u_id_ex of id_ex.v
-    wire		ex_pc_jump;		// From u_instr_execute of instr_execute.v
-    wire [31:0]		ex_pc_jump_addr;	// From u_instr_execute of instr_execute.v
     wire [31:0]		ex_rdata1;		// From u_id_ex of id_ex.v
     wire [31:0]		ex_rdata2;		// From u_id_ex of id_ex.v
     wire [4:0]		ex_regs_rd;		// From u_id_ex of id_ex.v
+    wire		flush;			// From u_jump_detect of jump_detect.v
     wire		forward_rs1;		// From u_forward_unit of forward_unit.v
     wire		forward_rs2;		// From u_forward_unit of forward_unit.v
     wire [1:0]		id_ctrl_ALUOp;		// From u_ctrl of ctrl.v
@@ -65,19 +63,18 @@ module QingFengRISCV (
     wire [31:0]		id_regs_rdata2;		// From u_regfiles of regfiles.v
     wire [4:0]		id_regs_rs1;		// From u_instr_decode of instr_decode.v
     wire [4:0]		id_regs_rs2;		// From u_instr_decode of instr_decode.v
+    wire		pc_jump;		// From u_jump_detect of jump_detect.v
+    wire [31:0]		pc_jump_addr;		// From u_jump_detect of jump_detect.v
+    wire		stall;			// From u_jump_detect of jump_detect.v
     // End of automatics
 
     //-------------------------------------
     // instruction fetch
     //-------------------------------------
-	wire [31:0] if_pc;
-	wire pc_jump;
-	wire [31:0] pc_jump_addr;
-	assign itcm_addr = if_pc[31:2];
-	assign pc_jump = ex_pc_jump;
-	assign pc_jump_addr = ex_pc_jump_addr;
+    wire [31:0] if_pc;
+    assign itcm_addr = if_pc[31:2];
 
-	/* instr_fetch AUTO_TEMPLATE (.\(.*\) (if_\1[]),); */
+    /* instr_fetch AUTO_TEMPLATE (.\(.*\) (if_\1[]),); */
     instr_fetch 	u_instr_fetch (
 		        	.clk            (clk),
                 	.rst_n          (rst_n),
@@ -103,6 +100,7 @@ module QingFengRISCV (
 			 .instr_o		(id_instr[31:0]), // Templated
 			 .pc_o			(id_pc[31:0]),	 // Templated
 			 // Inputs
+			 .flush			(flush),
 			 .instr_i		(if_instr[31:0]), // Templated
 			 .pc_i			(if_pc[31:0]));	 // Templated
 
@@ -110,10 +108,7 @@ module QingFengRISCV (
     // instruction decode
     //-------------------------------------
 	/* instr_decode AUTO_TEMPLATE (.\(.*\) (id_\1[]),); */
-    instr_decode 	u_instr_decode (
-					.clk(clk),
-					.rst_n(rst_n),
-					/*AUTOINST*/
+    instr_decode 	u_instr_decode (/*AUTOINST*/
 					// Outputs
 					.regs_rs1	(id_regs_rs1[4:0]), // Templated
 					.regs_rs2	(id_regs_rs2[4:0]), // Templated
@@ -178,7 +173,6 @@ module QingFengRISCV (
 			 // Outputs
 			 .pc_o			(ex_pc[31:0]),	 // Templated
 			 .ctrl_ALUOp_o		(ex_ctrl_ALUOp[1:0]), // Templated
-			 .ctrl_branch_o		(ex_ctrl_branch), // Templated
 			 .ctrl_mem_to_regs_o	(ex_ctrl_mem_to_regs), // Templated
 			 .ctrl_mem_read_o	(ex_ctrl_mem_read), // Templated
 			 .ctrl_mem_write_o	(ex_ctrl_mem_write), // Templated
@@ -197,7 +191,6 @@ module QingFengRISCV (
 			 .rst_n			(rst_n),
 			 .pc_i			(id_pc[31:0]),	 // Templated
 			 .ctrl_ALUOp_i		(id_ctrl_ALUOp[1:0]), // Templated
-			 .ctrl_branch_i		(id_ctrl_branch), // Templated
 			 .ctrl_mem_to_regs_i	(id_ctrl_mem_to_regs), // Templated
 			 .ctrl_mem_read_i	(id_ctrl_mem_read), // Templated
 			 .ctrl_mem_write_i	(id_ctrl_mem_write), // Templated
@@ -216,24 +209,17 @@ module QingFengRISCV (
     // instruction execute
     //-------------------------------------
 	/* instr_execute AUTO_TEMPLATE (.\(.*\) (ex_\1[]),); */
-    instr_execute 	u_instr_execute (
-					.clk(clk),
-					.rst_n(rst_n),
-					/*AUTOINST*/
+    instr_execute 	u_instr_execute (/*AUTOINST*/
 					 // Outputs
-					 .pc_jump		(ex_pc_jump),	 // Templated
-					 .pc_jump_addr		(ex_pc_jump_addr[31:0]), // Templated
 					 .alu_result		(ex_alu_result[31:0]), // Templated
 					 // Inputs
 					 .ctrl_ALUOp		(ex_ctrl_ALUOp[1:0]), // Templated
-					 .ctrl_branch		(ex_ctrl_branch), // Templated
 					 .ctrl_alusrc		(ex_ctrl_alusrc), // Templated
 					 .imme			(ex_imme[31:0]), // Templated
 					 .funct3		(ex_funct3[2:0]), // Templated
 					 .funct7_5		(ex_funct7_5),	 // Templated
 					 .rdata1		(ex_rdata1[31:0]), // Templated
-					 .rdata2		(ex_rdata2[31:0]), // Templated
-					 .pc			(ex_pc[31:0]));	 // Templated
+					 .rdata2		(ex_rdata2[31:0])); // Templated
 
 	// Forwarding Unit
 	forward_unit u_forward_unit (/*AUTOINST*/
@@ -247,6 +233,26 @@ module QingFengRISCV (
 				     .id_regs_rs2	(id_regs_rs2[4:0]),
 				     .ex_regs_rd	(ex_regs_rd[4:0]),
 				     .ex_ctrl_regs_write(ex_ctrl_regs_write));
+
+	// jump detection unit
+	wire [1:0] comp_result;
+	assign comp_result[0] = (id_regs_rdata1 == id_regs_rdata2) ? 1'b1 : 1'b0;   // 1:equal, 0:NOT equal
+	assign comp_result[1] = (id_regs_rdata1 < id_regs_rdata2)  ? 1'b1 : 1'b0;   // 1:less than, 0:NOT less than
+
+	jump_detect u_jump_detect(
+				  .funct3		(id_funct3[2:0]),
+				  .ctrl_branch	(id_ctrl_branch),
+				  .opcode_j		(id_opcode[3:2]),
+				  .pc			(id_pc[31:0]),
+				  .imme			(id_imme[31:0]),
+				  /*AUTOINST*/
+				  // Outputs
+				  .flush		(flush),
+				  .stall		(stall),
+				  .pc_jump		(pc_jump),
+				  .pc_jump_addr		(pc_jump_addr[31:0]),
+				  // Inputs
+				  .comp_result		(comp_result[1:0]));
 
 	// output to DTCM
 	assign dtcm_mem_write = ex_ctrl_mem_write;

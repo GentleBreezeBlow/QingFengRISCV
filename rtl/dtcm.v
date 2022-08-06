@@ -19,7 +19,7 @@ module dtcm #(
 
     input RCLK,
     input [AW - 1:0] RADDR,
-    output reg [DW - 1:0] RDATA,
+    output [DW - 1:0] RDATA,
     input REN
 );
     
@@ -33,9 +33,10 @@ module dtcm #(
     end
 
     // read
-    always @(posedge RCLK) begin
-        if (REN)
-            RDATA <= mem[RADDR];
-    end
+    // always @(posedge RCLK) begin
+    //     if (REN)
+    //         RDATA <= mem[RADDR];
+    // end
+    assign RDATA = (REN) ? mem[RADDR] : 32'bz;
 
 endmodule

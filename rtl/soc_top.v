@@ -32,6 +32,7 @@ module soc_top (
     //-------------------------------------
     wire [31:0] itcm_datain;
     wire [31:0] dtcm_datain;
+    assign dtcm_datain = dtcm_RDATA;
     QingFengRISCV core (/*AUTOINST*/
 			// Outputs
 			.itcm_addr	(itcm_addr[31:0]),

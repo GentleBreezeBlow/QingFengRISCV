@@ -9,11 +9,7 @@
 //-----------------------------------------------------------------------------
 
 module instr_execute (
-    input               clk,
-    input               rst_n,
-
     input  [1:0]        ctrl_ALUOp,             // ALU Operation Code
-    input               ctrl_branch,            // branch instruction from control 
     input               ctrl_alusrc,
 
     input  [31:0]       imme,
@@ -23,11 +19,6 @@ module instr_execute (
 
     input  [31:0]       rdata1,
     input  [31:0]       rdata2,
-
-    input  [31:0]       pc,
-
-    output              pc_jump,
-    output [31:0]       pc_jump_addr,
 
     output [31:0]       alu_result
 );
@@ -63,13 +54,6 @@ module instr_execute (
 			.ctrl_ALUOp	(ctrl_ALUOp[1:0]),
 			.funct3		(funct3[2:0]),
 			.funct7_5	(funct7_5));
-
-    //-------------------------------------
-    // PC jump
-    //-------------------------------------
-    assign pc_jump = ((ctrl_branch == 1'b1) && (alu_zero == 1'b1)) ? 1'b1 : 1'b0;
-    assign pc_jump_addr = pc + imme;
-
 
 endmodule //instr_execute
 // Local Variables:

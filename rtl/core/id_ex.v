@@ -18,7 +18,6 @@ module id_ex (
 
     // ctrl signal
     input  [1:0]        ctrl_ALUOp_i,
-    input               ctrl_branch_i,
     input               ctrl_mem_to_regs_i,
     input               ctrl_mem_read_i,
     input               ctrl_mem_write_i,
@@ -27,7 +26,6 @@ module id_ex (
     input               ctrl_u_type_i,
     input               ctrl_u_type_auipc_i,
     output reg [1:0]    ctrl_ALUOp_o,
-    output reg          ctrl_branch_o,
     output reg          ctrl_mem_to_regs_o,
     output reg          ctrl_mem_read_o,
     output reg          ctrl_mem_write_o,
@@ -70,7 +68,6 @@ module id_ex (
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             ctrl_ALUOp_o <= 'b0;
-            ctrl_branch_o <= 'b0;
             ctrl_mem_to_regs_o <= 'b0;
             ctrl_mem_read_o <= 'b0;
             ctrl_mem_write_o <= 'b0;
@@ -81,7 +78,6 @@ module id_ex (
         end
         else begin
             ctrl_ALUOp_o        <= ctrl_ALUOp_i         ;
-            ctrl_branch_o       <= ctrl_branch_i        ;
             ctrl_mem_to_regs_o  <= ctrl_mem_to_regs_i   ;
             ctrl_mem_read_o     <= ctrl_mem_read_i      ;
             ctrl_mem_write_o    <= ctrl_mem_write_i     ;

@@ -22,13 +22,20 @@ module alu (
     //-------------------------------------------
     // 
     //
+    wire signed [31:0]  alu_datain1_s;
+    wire signed [31:0]  alu_datain2_s;
+
+    assign alu_datain1_s = alu_datain1;
+    assign alu_datain2_s = alu_datain2;
+
     reg [31:0] alu_result_r;
+
     always @(*) begin
         case (alu_ctrl)
             `ADD : alu_result_r = alu_datain1 + alu_datain2;
             `SUB : alu_result_r = alu_datain1 - alu_datain2;
             `SLL : alu_result_r = alu_datain1 << alu_datain2;
-            `SLT : alu_result_r = (alu_datain1 < alu_datain2) ? 32'b1 : 32'b0;
+            `SLT : alu_result_r = (alu_datain1_s < alu_datain2_s) ? 32'b1 : 32'b0;
             `SLTU: alu_result_r = (alu_datain1 < alu_datain2) ? 32'b1 : 32'b0;
             `XOR : alu_result_r = alu_datain1 ^ alu_datain2;
             `SRL : alu_result_r = alu_datain1 >> alu_datain2;

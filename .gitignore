@@ -1,4 +1,5 @@
 /ref/*
+/riscv-tests
 *.bit
 *.bin
 *.hex

@@ -39,21 +39,21 @@ module instr_execute (
     assign alu_datain2 = (ctrl_alusrc == 1'b1) ? imme : rdata2;
 
     alu u_alu (/*AUTOINST*/
-	       // Outputs
-	       .alu_result		(alu_result[31:0]),
-	       .alu_zero		(alu_zero),
-	       // Inputs
-	       .alu_ctrl		(alu_ctrl[3:0]),
-	       .alu_datain1		(alu_datain1[31:0]),
-	       .alu_datain2		(alu_datain2[31:0]));
+           // Outputs
+           .alu_result		(alu_result[31:0]),
+           .alu_zero		(alu_zero),
+           // Inputs
+           .alu_ctrl		(alu_ctrl[3:0]),
+           .alu_datain1		(alu_datain1[31:0]),
+           .alu_datain2		(alu_datain2[31:0]));
 
     alu_ctrl u_alu_ctrl(/*AUTOINST*/
-			// Outputs
-			.alu_ctrl	(alu_ctrl[3:0]),
-			// Inputs
-			.ctrl_ALUOp	(ctrl_ALUOp[1:0]),
-			.funct3		(funct3[2:0]),
-			.funct7_5	(funct7_5));
+            // Outputs
+            .alu_ctrl	(alu_ctrl[3:0]),
+            // Inputs
+            .ctrl_ALUOp	(ctrl_ALUOp[1:0]),
+            .funct3		(funct3[2:0]),
+            .funct7_5	(funct7_5));
 
 endmodule //instr_execute
 // Local Variables:

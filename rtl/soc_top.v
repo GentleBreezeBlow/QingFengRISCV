@@ -34,17 +34,17 @@ module soc_top (
     wire [31:0] dtcm_datain;
     assign dtcm_datain = dtcm_RDATA;
     QingFengRISCV core (/*AUTOINST*/
-			// Outputs
-			.itcm_addr	(itcm_addr[31:0]),
-			.dtcm_mem_write	(dtcm_mem_write),
-			.dtcm_addr	(dtcm_addr[31:0]),
-			.dtcm_dataout	(dtcm_dataout[31:0]),
-			.dtcm_mem_read	(dtcm_mem_read),
-			// Inputs
-			.clk		(clk),
-			.rst_n		(rst_n),
-			.itcm_datain	(itcm_datain[31:0]),
-			.dtcm_datain	(dtcm_datain[31:0]));
+            // Outputs
+            .itcm_addr	(itcm_addr[31:0]),
+            .dtcm_mem_write	(dtcm_mem_write),
+            .dtcm_addr	(dtcm_addr[31:0]),
+            .dtcm_dataout	(dtcm_dataout[31:0]),
+            .dtcm_mem_read	(dtcm_mem_read),
+            // Inputs
+            .clk		(clk),
+            .rst_n		(rst_n),
+            .itcm_datain	(itcm_datain[31:0]),
+            .dtcm_datain	(dtcm_datain[31:0]));
 
 
     //-------------------------------------
@@ -66,14 +66,14 @@ module soc_top (
         .AW(AW),
         .DW(DW)
     )u_itcm (/*AUTOINST*/
-		 // Outputs
-		 .RDATA			(itcm_RDATA[DW-1:0]),	 // Templated
-		 // Inputs
-		 .WCLK			(itcm_WCLK),		 // Templated
-		 .WADDR			(itcm_WADDR[AW-1:0]),	 // Templated
-		 .WDATA			(itcm_WDATA[DW-1:0]),	 // Templated
-		 .WEN			(itcm_WEN),		 // Templated
-		 .RADDR			(itcm_RADDR[AW-1:0]));	 // Templated
+         // Outputs
+         .RDATA			(itcm_RDATA[DW-1:0]),	 // Templated
+         // Inputs
+         .WCLK			(itcm_WCLK),		 // Templated
+         .WADDR			(itcm_WADDR[AW-1:0]),	 // Templated
+         .WDATA			(itcm_WDATA[DW-1:0]),	 // Templated
+         .WEN			(itcm_WEN),		 // Templated
+         .RADDR			(itcm_RADDR[AW-1:0]));	 // Templated
 
     //-------------------------------------
     // DTCM
@@ -99,16 +99,16 @@ module soc_top (
         .AW(AW),
         .DW(DW)
     )u_dtcm (/*AUTOINST*/
-		 // Outputs
-		 .RDATA			(dtcm_RDATA[DW-1:0]),	 // Templated
-		 // Inputs
-		 .WCLK			(dtcm_WCLK),		 // Templated
-		 .WADDR			(dtcm_WADDR[AW-1:0]),	 // Templated
-		 .WDATA			(dtcm_WDATA[DW-1:0]),	 // Templated
-		 .WEN			(dtcm_WEN),		 // Templated
-		 .RCLK			(dtcm_RCLK),		 // Templated
-		 .RADDR			(dtcm_RADDR[AW-1:0]),	 // Templated
-		 .REN			(dtcm_REN));		 // Templated
+         // Outputs
+         .RDATA			(dtcm_RDATA[DW-1:0]),	 // Templated
+         // Inputs
+         .WCLK			(dtcm_WCLK),		 // Templated
+         .WADDR			(dtcm_WADDR[AW-1:0]),	 // Templated
+         .WDATA			(dtcm_WDATA[DW-1:0]),	 // Templated
+         .WEN			(dtcm_WEN),		 // Templated
+         .RCLK			(dtcm_RCLK),		 // Templated
+         .RADDR			(dtcm_RADDR[AW-1:0]),	 // Templated
+         .REN			(dtcm_REN));		 // Templated
 
 endmodule //soc_top
 // Local Variables:

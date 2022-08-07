@@ -12,7 +12,7 @@ module jump_detect (
     input  [2:0]        funct3,
     input               ctrl_branch,
     input  [3:2]        opcode_j,
-    input  [1:0]        comp_result,        // 0bit: equal or NOT equal, 1bit: less than or NOT less than
+    input  [2:0]        comp_result,        // 0bit: equal or NOT equal, 1bit: (signed) less than or NOT less than, 2bit: (unsigned) less than or NOT less than
     
     output              flush,
     output              stall,
@@ -50,11 +50,11 @@ module jump_detect (
                             pc_jump_r = 1'b1;
                         else
                             pc_jump_r = 1'b0;
-                3'b110: if (comp_result[1] == 1'b1)     // bltu
+                3'b110: if (comp_result[2] == 1'b1)     // bltu
                             pc_jump_r = 1'b1;
                         else
                             pc_jump_r = 1'b0;
-                3'b111: if (comp_result[1] == 1'b0)     // bgeu
+                3'b111: if (comp_result[2] == 1'b0)     // bgeu
                             pc_jump_r = 1'b1;
                         else
                             pc_jump_r = 1'b0;

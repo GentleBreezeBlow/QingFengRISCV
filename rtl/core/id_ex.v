@@ -25,6 +25,7 @@ module id_ex (
     input               ctrl_regs_write_i,
     input               ctrl_u_type_i,
     input               ctrl_u_type_auipc_i,
+    input               ctrl_j_type_i,
     output reg [1:0]    ctrl_ALUOp_o,
     output reg          ctrl_mem_to_regs_o,
     output reg          ctrl_mem_read_o,
@@ -33,6 +34,7 @@ module id_ex (
     output reg          ctrl_regs_write_o,
     output reg          ctrl_u_type_o,
     output reg          ctrl_u_type_auipc_o,
+    output reg          ctrl_j_type_o,
 
     // immediate
     input  [31:0]       imme_i,
@@ -75,6 +77,7 @@ module id_ex (
             ctrl_regs_write_o <= 'b0;
             ctrl_u_type_o <= 'b0;
             ctrl_u_type_auipc_o <= 'b0;
+            ctrl_j_type_o <= 'b0;
         end
         else begin
             ctrl_ALUOp_o        <= ctrl_ALUOp_i         ;
@@ -85,6 +88,7 @@ module id_ex (
             ctrl_regs_write_o   <= ctrl_regs_write_i    ;
             ctrl_u_type_o       <= ctrl_u_type_i        ;
             ctrl_u_type_auipc_o <= ctrl_u_type_auipc_i  ;
+            ctrl_j_type_o       <= ctrl_j_type_i        ;
         end
     end
 

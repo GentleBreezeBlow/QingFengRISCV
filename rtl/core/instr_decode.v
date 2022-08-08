@@ -39,7 +39,12 @@ module instr_decode (
     always @(*) begin
         case (opcode)
             `R_type       : imme_r = 'b0; 
-            `I_type_imme  : imme_r = {{20{instr[31]}}, instr[31:20]};
+            `I_type_imme  : if (funct3[1:0] == 2'b01 && instr[25] == 1'b0)       // slli/srli/srai
+                                imme_r = {{26{1'b0}},instr[25:20]};
+                            else if (funct3[1:0] == 2'b01 && instr[25] == 1'b1)
+                                imme_r = {32{1'b0}};
+                            else
+                                imme_r = {{20{instr[31]}}, instr[31:20]};
             `I_type_load  : imme_r = {{20{instr[31]}}, instr[31:20]};
             `S_type       : imme_r = {{20{instr[31]}}, instr[31:25], instr[11:7]};
             `B_type       : imme_r = {{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0};

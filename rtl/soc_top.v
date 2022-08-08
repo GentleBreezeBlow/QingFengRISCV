@@ -13,12 +13,13 @@ module soc_top (
     input               rst_n
 );
 
-    parameter AW = 12;
+    parameter AW = 18;
     parameter DW = 32;
 
     /*AUTOWIRE*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
     wire [DW-1:0]	dtcm_RDATA;		// From u_dtcm of dtcm.v
+    wire [2:0]		dtcm_RW_type;		// From core of QingFengRISCV.v
     wire [31:0]		dtcm_addr;		// From core of QingFengRISCV.v
     wire [31:0]		dtcm_dataout;		// From core of QingFengRISCV.v
     wire		dtcm_mem_read;		// From core of QingFengRISCV.v
@@ -40,6 +41,7 @@ module soc_top (
             .dtcm_addr	(dtcm_addr[31:0]),
             .dtcm_dataout	(dtcm_dataout[31:0]),
             .dtcm_mem_read	(dtcm_mem_read),
+            .dtcm_RW_type	(dtcm_RW_type[2:0]),
             // Inputs
             .clk		(clk),
             .rst_n		(rst_n),
@@ -106,6 +108,7 @@ module soc_top (
          .WADDR			(dtcm_WADDR[AW-1:0]),	 // Templated
          .WDATA			(dtcm_WDATA[DW-1:0]),	 // Templated
          .WEN			(dtcm_WEN),		 // Templated
+         .RW_type			(dtcm_RW_type[2:0]),	 // Templated
          .RCLK			(dtcm_RCLK),		 // Templated
          .RADDR			(dtcm_RADDR[AW-1:0]),	 // Templated
          .REN			(dtcm_REN));		 // Templated

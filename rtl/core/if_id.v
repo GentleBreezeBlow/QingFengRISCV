@@ -40,9 +40,6 @@ module if_id (
         if(!rst_n) begin
             pc_o <= 'b0;
         end
-        else if(flush) begin
-            pc_o <= 'b0;
-        end
         else begin
             pc_o <= pc_i;
         end

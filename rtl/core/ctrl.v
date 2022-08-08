@@ -20,7 +20,8 @@ module ctrl (
     output              ctrl_alusrc,
     output              ctrl_regs_write,
     output              ctrl_u_type,
-    output              ctrl_u_type_auipc
+    output              ctrl_u_type_auipc,
+    output              ctrl_j_type
 );
     
     //-------------------------------------
@@ -72,5 +73,8 @@ module ctrl (
     assign ctrl_u_type      = ((opcode == `U_type_auipc) || (opcode == `U_type_lui)) ? 1'b1 : 1'b0;
 
     assign ctrl_u_type_auipc = (opcode == `U_type_auipc) ? 1'b1 : 1'b0;
+
+    // Select whether instruction is J_type
+    assign ctrl_j_type      = ((opcode == `J_type_jal) || (opcode == `J_type_jalr)) ? 1'b1 : 1'b0;
 
 endmodule //ctrl

@@ -19,14 +19,17 @@ module QingFengRISCV (
     output [31:0]       dtcm_addr,
     output [31:0]       dtcm_dataout,
     input  [31:0]       dtcm_datain,
-    output              dtcm_mem_read
+    output              dtcm_mem_read,
+    output [2:0]        dtcm_RW_type
 );
 
     /*AUTOWIRE*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
+    wire [31:0]		dtcm_data_extend;	// From u_data_extend of data_extend.v
     wire [31:0]		ex_alu_result;		// From u_instr_execute of instr_execute.v
     wire [1:0]		ex_ctrl_ALUOp;		// From u_id_ex of id_ex.v
     wire		ex_ctrl_alusrc;		// From u_id_ex of id_ex.v
+    wire		ex_ctrl_j_type;		// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_read;	// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_to_regs;	// From u_id_ex of id_ex.v
     wire		ex_ctrl_mem_write;	// From u_id_ex of id_ex.v
@@ -46,6 +49,7 @@ module QingFengRISCV (
     wire [1:0]		id_ctrl_ALUOp;		// From u_ctrl of ctrl.v
     wire		id_ctrl_alusrc;		// From u_ctrl of ctrl.v
     wire		id_ctrl_branch;		// From u_ctrl of ctrl.v
+    wire		id_ctrl_j_type;		// From u_ctrl of ctrl.v
     wire		id_ctrl_mem_read;	// From u_ctrl of ctrl.v
     wire		id_ctrl_mem_to_regs;	// From u_ctrl of ctrl.v
     wire		id_ctrl_mem_write;	// From u_ctrl of ctrl.v
@@ -123,9 +127,10 @@ module QingFengRISCV (
     wire [31:0] regs_wdata;
     wire [31:0] regs_wdata_u_type;
     wire [31:0] regs_wdata_alu;
-    assign regs_wdata_alu = (ex_ctrl_mem_to_regs == 1'b1) ? dtcm_datain : ex_alu_result;
+    assign regs_wdata_alu = (ex_ctrl_mem_to_regs == 1'b1) ? dtcm_data_extend : ex_alu_result;
     assign regs_wdata_u_type = (ex_ctrl_u_type_auipc == 1'b1) ? (ex_pc + ex_imme) : ex_imme;
-    assign regs_wdata = (ex_ctrl_u_type == 1'b1) ? regs_wdata_u_type : regs_wdata_alu;
+    assign regs_wdata = (ex_ctrl_j_type == 1'b1) ? (ex_pc + 32'd4) : 
+                        (ex_ctrl_u_type == 1'b1) ? regs_wdata_u_type : regs_wdata_alu;
     /* regfiles AUTO_TEMPLATE (.\(.*\) (id_\1[]),); */
     regfiles 	u_regfiles(
                     .clk(clk),
@@ -158,6 +163,7 @@ module QingFengRISCV (
             .ctrl_regs_write(id_ctrl_regs_write),	 // Templated
             .ctrl_u_type	(id_ctrl_u_type),	 // Templated
             .ctrl_u_type_auipc(id_ctrl_u_type_auipc), // Templated
+            .ctrl_j_type	(id_ctrl_j_type),	 // Templated
             // Inputs
             .opcode		(id_opcode[6:0]));	 // Templated
 
@@ -180,6 +186,7 @@ module QingFengRISCV (
              .ctrl_regs_write_o	(ex_ctrl_regs_write), // Templated
              .ctrl_u_type_o		(ex_ctrl_u_type), // Templated
              .ctrl_u_type_auipc_o	(ex_ctrl_u_type_auipc), // Templated
+             .ctrl_j_type_o		(ex_ctrl_j_type), // Templated
              .imme_o		(ex_imme[31:0]), // Templated
              .funct3_o		(ex_funct3[2:0]), // Templated
              .funct7_5_o		(ex_funct7_5),	 // Templated
@@ -198,6 +205,7 @@ module QingFengRISCV (
              .ctrl_regs_write_i	(id_ctrl_regs_write), // Templated
              .ctrl_u_type_i		(id_ctrl_u_type), // Templated
              .ctrl_u_type_auipc_i	(id_ctrl_u_type_auipc), // Templated
+             .ctrl_j_type_i		(id_ctrl_j_type), // Templated
              .imme_i		(id_imme[31:0]), // Templated
              .funct3_i		(id_funct3[2:0]), // Templated
              .funct7_5_i		(id_funct7_5),	 // Templated
@@ -235,15 +243,6 @@ module QingFengRISCV (
                  .ex_ctrl_regs_write	(ex_ctrl_regs_write));
 
     // jump detection unit
-    wire [2:0] comp_result;
-    wire signed [31:0]	id_regs_rdata1_s;
-    wire signed [31:0]  id_regs_rdata2_s;
-    assign id_regs_rdata1_s = id_regs_rdata1;
-    assign id_regs_rdata2_s = id_regs_rdata2;
-    assign comp_result[0] = (id_regs_rdata1 == id_regs_rdata2)     ? 1'b1 : 1'b0;   // 1:equal, 0:NOT equal
-    assign comp_result[1] = (id_regs_rdata1_s < id_regs_rdata2_s)  ? 1'b1 : 1'b0;   // (signed)1:less than, 0:NOT less than
-    assign comp_result[2] = (id_regs_rdata1 < id_regs_rdata2)      ? 1'b1 : 1'b0;   // (unsigned)1:less than, 0:NOT less than
-
     jump_detect u_jump_detect(
                   .funct3		(id_funct3[2:0]),
                   .ctrl_branch	(id_ctrl_branch),
@@ -257,13 +256,25 @@ module QingFengRISCV (
                   .pc_jump		(pc_jump),
                   .pc_jump_addr	(pc_jump_addr[31:0]),
                   // Inputs
-                  .comp_result	(comp_result[2:0]));
+                  .id_rdata1	(id_rdata1[31:0]),
+                  .id_rdata2	(id_rdata2[31:0]));
+
+    // dtcm data extend
+    data_extend u_data_extend (
+                   .RW_type		(ex_funct3[2:0]),
+                   .ctrl_mem_read (ex_ctrl_mem_read),
+                   /*AUTOINST*/
+                   // Outputs
+                   .dtcm_data_extend(dtcm_data_extend[31:0]),
+                   // Inputs
+                   .dtcm_datain	(dtcm_datain[31:0]));
 
     // output to DTCM
     assign dtcm_mem_write = ex_ctrl_mem_write;
     assign dtcm_mem_read  = ex_ctrl_mem_read;
     assign dtcm_addr      = ex_alu_result;
     assign dtcm_dataout	  = ex_rdata2;
+    assign dtcm_RW_type   = ex_funct3;
     
 endmodule //QingFengRISCV
 // Local Variables:

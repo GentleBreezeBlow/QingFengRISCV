@@ -4,8 +4,7 @@ RTL_DIR = ../../../rtl
 FILES  := $(addsuffix \n,$(wildcard ${RTL_DIR}/../sim/*.sv ${RTL_DIR}/*.v ${RTL_DIR}/*/*.v))
 
 file:
-	-rm *.f -rf
-	echo -e "$(FILES)" >> filelist.f
+	echo -e "$(FILES)" > filelist.f
 	echo -e "+incdir+$(RTL_DIR)/core/" >> filelist.f
 sim:
 	vcs +v2k \

@@ -31,6 +31,10 @@ module dtcm #(
     reg [7 : 0] mem_2 [0 : (1<<AW) - 1];
     reg [7 : 0] mem_3 [0 : (1<<AW) - 1];
 
+    //debug
+    reg [7:0] mem_deb;
+    assign mem_deb = mem_0[0];
+
     wire [3:0] byte_wen;
     assign byte_wen = (RW_type == 3'b000) ? 4'b0001 :
                       (RW_type == 3'b001) ? 4'b0011 :

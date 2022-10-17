@@ -4,8 +4,7 @@ RTL_DIR = ../../rtl
 FILES  := $(addsuffix \n,$(wildcard ../*.sv ${RTL_DIR}/*.v ${RTL_DIR}/*/*.v))
 
 file:
-	-rm *.f -rf
-	echo -e "$(FILES)" >> filelist.f
+	echo -e "$(FILES)" > filelist.f
 	echo -e "+incdir+$(RTL_DIR)/core/" >> filelist.f
 sim:
 	vcs +v2k \
@@ -15,6 +14,7 @@ sim:
 	-f filelist.f \
 	-l vcs.log \
 	-full64 \
+	-prof -race \
 	-cpp g++-4.8 -cc gcc-4.8 \
 	-LDFLAGS -Wl,--no-as-needed \
 	+sdfverbose \
